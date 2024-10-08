@@ -1,4 +1,4 @@
-Ansible Role: Change SSL
+Ansible Role: Webserver Conf Scout
 =========
 
 도메인을 사용하여 웹서버 작업시 필요한 정보를 알아냅니다.
