@@ -12,6 +12,62 @@ SUCCESS=$BGreen
 WARN=$BYellow
 DANGER=$BRed
 
+echo ""
+sleep 1
+printf "${INFO}============================================================================${Color_Off}\n"
+sleep 1
+echo ""
+sleep 1
+printf "${SUCCESS}  ___  _____  ___    _    ___ __   __                                       ${Color_Off}\n"
+sleep 1
+printf "${SUCCESS} |_ _||_   _|| __|  /_\  / __|\ \ / /                                       ${Color_Off}\n"
+sleep 1
+printf "${SUCCESS}  | |   | |  | _|  / _ \ \__ \ \ V /                                        ${Color_Off}\n"
+sleep 1
+printf "${SUCCESS} |___|  |_|  |___|/_/ \_\|___/  |_|                                         ${Color_Off}\n"
+sleep 1
+printf "${INFO} __      __     _      ___                             ___              __  ${Color_Off}\n"
+sleep 1
+printf "${INFO} \ \    / /___ | |__  / __| ___  _ _ __ __ ___  _ _   / __| ___  _ _   / _| ${Color_Off}\n"
+sleep 1
+printf "${INFO}  \ \/\/ // -_)| '_ \ \__ \/ -_)| '_|\ V // -_)| '_| | (__ / _ \| ' \ |  _| ${Color_Off}\n"
+sleep 1
+printf "${INFO}   \_/\_/ \___||_.__/ |___/\___||_|   \_/ \___||_|    \___|\___/|_||_||_|   ${Color_Off}\n"
+sleep 1
+printf "${INFO}  ___                 _                                                     ${Color_Off}\n"
+sleep 1
+printf "${INFO} / __| __  ___  _  _ | |_                                                   ${Color_Off}\n"
+sleep 1
+printf "${INFO} \__ \/ _|/ _ \| || ||  _| _                                                ${Color_Off}\n"
+sleep 1
+printf "${INFO} |___/\__|\___/ \_,_| \__|(_)                                               ${Color_Off}\n"
+sleep 1
+echo ""
+sleep 1
+printf "${INFO}============================================================================${Color_Off}\n"
+sleep 1
+echo ""
+sleep 1
+# echo ""
+# printf "${INFO}============================================================================${Color_Off}\n"
+# echo ""
+# printf "${SUCCESS}  ___  _____  ___    _    ___ __   __                                       ${Color_Off}\n"
+# printf "${SUCCESS} |_ _||_   _|| __|  /_\  / __|\ \ / /                                       ${Color_Off}\n"
+# printf "${SUCCESS}  | |   | |  | _|  / _ \ \__ \ \ V /                                        ${Color_Off}\n"
+# printf "${SUCCESS} |___|  |_|  |___|/_/ \_\|___/  |_|                                         ${Color_Off}\n"
+# printf "${INFO} __      __     _      ___                             ___              __  ${Color_Off}\n"
+# printf "${INFO} \ \    / /___ | |__  / __| ___  _ _ __ __ ___  _ _   / __| ___  _ _   / _| ${Color_Off}\n"
+# printf "${INFO}  \ \/\/ // -_)| '_ \ \__ \/ -_)| '_|\ V // -_)| '_| | (__ / _ \| ' \ |  _| ${Color_Off}\n"
+# printf "${INFO}   \_/\_/ \___||_.__/ |___/\___||_|   \_/ \___||_|    \___|\___/|_||_||_|   ${Color_Off}\n"
+# printf "${INFO}  ___                 _                                                     ${Color_Off}\n"
+# printf "${INFO} / __| __  ___  _  _ | |_                                                   ${Color_Off}\n"
+# printf "${INFO} \__ \/ _|/ _ \| || ||  _| _                                                ${Color_Off}\n"
+# printf "${INFO} |___/\__|\___/ \_,_| \__|(_)                                               ${Color_Off}\n"
+# echo ""
+# printf "${INFO}============================================================================${Color_Off}\n"
+# echo ""
+
+
 # 루트 권한 확인
 if [ "$(id -u)" -ne 0 ]; then
     printf "${DANGER}루트 권한이 필요합니다.${Color_Off}\n"
