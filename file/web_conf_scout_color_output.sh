@@ -1,8 +1,24 @@
+# TODO: 
+# docker 일 경우
+# nginx 일 경우 
+
 #!/bin/bash
+
+Color_Off='\033[0m'
+
+BBlue='\033[1;34m'
+BGreen='\033[1;32m'
+BYellow='\033[1;33m'
+BRed='\033[1;31m'
+
+INFO=$BBlue
+SUCCESS=$BGreen
+WARN=$BYellow
+DANGER=$BRed
 
 # 루트 권한 확인
 if [ "$(id -u)" -ne 0 ]; then
-    printf "루트 권한이 필요합니다.\n"
+    printf "${DANGER}루트 권한이 필요합니다.${Color_Off}\n"
     exit 1
 fi
 
@@ -11,24 +27,24 @@ install_idn() {
     if [ -x "$(command -v yum)" ]; then
         # CentOS/RHEL 계열
         if ! rpm -q libidn >/dev/null 2>&1; then
-            printf "libidn 패키지를 설치합니다.\n"
+            printf "${INFO}libidn 패키지를 설치합니다.${Color_Off}\n"
             yum install -y libidn
-            printf "libidn 패키지 설치 완료.\n"
+            printf "${SUCCESS}libidn 패키지 설치 완료.${Color_Off}\n"
         else
-            printf "libidn 패키지가 이미 설치되어 있습니다.\n"
+            printf "${INFO}libidn 패키지가 이미 설치되어 있습니다.${Color_Off}\n"
         fi
     elif [ -x "$(command -v apt-get)" ]; then
         # Debian/Ubuntu 계열
         if ! which idn2; then
-            printf "idn2 패키지를 설치합니다.\n"
+            printf "${INFO}idn2 패키지를 설치합니다.${Color_Off}\n"
             apt-get update
             apt-get install -y idn2
-            printf "idn2 패키지 설치 완료.\n"
+            printf "${SUCCESS}idn2 패키지 설치 완료.${Color_Off}\n"
         else
-            printf "idn2 패키지가 이미 설치되어 있습니다.\n"
+            printf "${INFO}idn2 패키지가 이미 설치되어 있습니다.${Color_Off}\n"
         fi
     else
-        printf "지원하지 않는 패키지 매니저입니다.\n"
+        printf "${DANGER}지원하지 않는 패키지 매니저입니다.${Color_Off}\n"
         exit 1
     fi
 }
@@ -51,7 +67,7 @@ get_idn_command() {
     elif [ -x "$(command -v apt-get)" ]; then
         echo "idn2" # Ubuntu는 idn2 사용
     else
-        printf "지원하지 않는 운영체제입니다.\n"
+        printf "${DANGER}지원하지 않는 운영체제입니다.${Color_Off}\n"
         exit 1
     fi
 }
@@ -74,17 +90,17 @@ convert_to_punycode() {
 
 # 검색하려는 도메인을 입력받음
 search_domain=$1
-printf "입력받은 도메인: $search_domain\n"
+printf "${INFO}입력받은 도메인: ${Color_Off}$search_domain\n"
 
 # 도메인을 퓨니코드로 변환
 search_domain_punycode=$(convert_to_punycode "$search_domain")
-printf "검색 할 도메인: $search_domain_punycode\n"
+printf "${INFO}검색 할 도메인: ${SUCCESS}$search_domain_punycode${Color_Off}\n"
 
 # 웹서버 확인
 web_server=$( ps -e | grep -E 'nginx|apache|httpd' | head -n 1 | awk '{print $4}')
 
 # if [[ -z "$web_server" ]]; then
-#     printf "웹서버를 찾을 수 없습니다.\n"
+#     printf "${DANGER}웹서버를 찾을 수 없습니다.${Color_Off}\n"
 #     exit 1
 # fi
 
@@ -93,9 +109,9 @@ web_server=$( ps -e | grep -E 'nginx|apache|httpd' | head -n 1 | awk '{print $4}
 
 # 실행 중인 웹 서버가 없는 경우 경고 메시지만 출력하고 진행
 if [[ -z "$web_server" ]]; then
-    printf "웹서버가 실행 중이지 않습니다.\n"
+    printf "${DANGER}웹서버가 실행 중이지 않습니다.${Color_Off}\n"
 else
-    printf "실행 중인 웹서버: $web_server\n"
+    printf "${INFO}실행 중인 웹서버:${Color_Off} $web_server\n"
 fi
 
 # 로컬 설치 여부 확인 (Apache 또는 Nginx)
@@ -113,15 +129,15 @@ NGINX_TARGETS="/etc/nginx /usr/local/etc/nginx"
 
 # 로컬에서 찾을 수 없을 경우, Apache/Nginx 경로 탐색
 if [[ -z "$isLocal" ]]; then
-    printf "$web_server 를 PATH에서 찾을 수 없습니다.\n"
-    printf "설치된 경로를 검색합니다.\n"
+    printf "${WARN}$web_server 를 PATH에서 찾을 수 없습니다.\n"
+    printf "설치된 경로를 검색합니다.${Color_Off}\n"
 
     # case 문을 사용하여 Apache와 Nginx를 분기 처리
     case $web_server in
         *httpd*)
             for bin in $HTTPD_TARGETS; do
                 if [[ -x "$bin" ]]; then
-                    printf "Httpd 서버가 $bin 에서 발견되었습니다.\n"
+                    printf "${SUCCESS}Httpd 서버가 $bin 에서 발견되었습니다.${Color_Off}\n"
                     isLocal="$bin"
                     web_server="$bin"
                     break
@@ -131,7 +147,7 @@ if [[ -z "$isLocal" ]]; then
         *apache*)
             for bin in $APACHE_TARGETS; do
                 if [[ -x "$bin" ]]; then
-                    printf "Apache 서버가 $bin 에서 발견되었습니다.\n"
+                    printf "${SUCCESS}Apache 서버가 $bin 에서 발견되었습니다.${Color_Off}\n"
                     isLocal="$bin"
                     web_server="$bin"
                     break
@@ -141,7 +157,7 @@ if [[ -z "$isLocal" ]]; then
         *nginx*)
             for bin in $NGINX_TARGETS; do
                 if [[ -x "$bin" ]]; then
-                    printf "Nginx 서버가 $bin 에서 발견되었습니다.\n"
+                    printf "${SUCCESS}Nginx 서버가 $bin 에서 발견되었습니다.${Color_Off}\n"
                     isLocal="$bin"
                     web_server="$bin"
                     break
@@ -149,23 +165,23 @@ if [[ -z "$isLocal" ]]; then
             done
             ;;
         *)
-            printf "지원되지 않는 웹서버입니다: $web_server\n"
+            printf "${DANGER}지원되지 않는 웹서버입니다: $web_server${Color_Off}\n"
             ;;
     esac
 
     # Apache와 Nginx 모두 찾지 못한 경우 경고
     if [[ -z "$isLocal" ]]; then
-        printf "$web_server 서버를 찾을 수 없습니다.\n"
+        printf "${DANGER}$web_server 서버를 찾을 수 없습니다.${Color_Off}\n"
     fi
 fi
 
 if [[ -z "$isLocal" ]]; then
     # 로컬에 설치되어있지 않은 경우. 도커 컨테이너를 확인한다.
-    printf "로컬에 설치되어있지 않습니다. 도커를 확인해보겠습니다.\n"
+    printf "${WARN}로컬에 설치되어있지 않습니다. 도커를 확인해보겠습니다.${Color_Off}\n"
     web_server_container=$(docker ps | grep -E '443' | awk '{ print $2 }')
     # echo $web_server_container
     if [[ -z "$web_server_container" ]]; then
-        printf "도커에서 발견되지 않았습니다. 더이상 찾을 수 없으므로 종료합니다.\n"
+        printf "${DANGER}도커에서 발견되지 않았습니다. 더이상 찾을 수 없으므로 종료합니다.${Color_Off}\n"
         exit 1
     fi
 
@@ -176,9 +192,9 @@ if [[ -z "$isLocal" ]]; then
     docker_os_version=$(docker exec -i $web_server_container uname -r)
     # echo $docker_os_version
 
-    printf "도커 머신 정보: $docker_machin_arch\n"
-    printf "도커 OS 정보: $docker_os_name $docker_os_version\n"
-    printf "도커 웹서버 정보: $web_server\n"
+    printf "${INFO}도커 머신 정보: ${Color_Off}$docker_machin_arch\n"
+    printf "${INFO}도커 OS 정보: ${Color_Off}$docker_os_name $docker_os_version\n"
+    printf "${INFO}도커 웹서버 정보: ${Color_Off}$web_server\n"
 
     # 웹 서버 확인을 위한 case 문
     case "$web_server" in
@@ -186,7 +202,7 @@ if [[ -z "$isLocal" ]]; then
         *httpd*|*apache*)
             # 웹 서버 버전 확인
             web_server_version=$($web_server -v | grep version | awk '{ print $3 }')
-            printf "도커 웹서버 버전: $web_server_version\n"
+            printf "${INFO}도커 웹서버 버전: ${Color_Off}$web_server_version\n"
             
             # httpd -S 명령어의 출력을 임시 파일에 저장
             output=$($web_server -S 2>/dev/null)
@@ -214,7 +230,7 @@ if [[ -z "$isLocal" ]]; then
 
             # 결과가 있는지 확인하고 처리
             if [[ -n "$found" ]]; then
-                printf "conf 파일 위치:\n$found\n"
+                printf "${INFO}conf 파일 위치:\n${SUCCESS}$found\n${Color_Off}"
                 # echo $found
 
                 # 각 라인에서 파일 경로와 라인 번호 추출
@@ -223,7 +239,7 @@ if [[ -z "$isLocal" ]]; then
                     file_path=$(echo "$line" | cut -d':' -f1)
                     line_number=$(echo "$line" | cut -d':' -f2)
 
-                    printf "conf 내용:\n$file_path $line_number line.\n"
+                    printf "${INFO}conf 내용:\n${SUCCESS}$file_path $line_number line.${Color_Off}\n"
 
                     # 해당 파일의 라인부터 <VirtualHost> 블록 출력
                     sed -n "${line_number},/<\/VirtualHost>/p" "$file_path"
@@ -231,27 +247,27 @@ if [[ -z "$isLocal" ]]; then
                 done <<< "$found"
 
             else
-                printf "Docker: 해당 도메인의 conf 파일을 찾을 수 없습니다.\n"
+                printf "${DANGER}Docker: 해당 도메인의 conf 파일을 찾을 수 없습니다.${Color_Off}\n"
             fi
             ;;
             
         # nginx인 경우
         *nginx*)
-            printf "Nginx 서버에 대한 도메인 확인 기능을 구현 중입니다.\n"
+            printf "${WARN}Nginx 서버에 대한 도메인 확인 기능을 구현 중입니다.${Color_Off}\n"
             web_server_version=$(docker exec -i "$web_server_container" $web_server -v 2>&1 | awk '{ print $3 }')
-            printf "도커 웹서버 버전:  $web_server_version\n"
+            printf "${INFO}도커 웹서버 버전: ${Color_Off} $web_server_version\n"
 
             nginx_conf=$(docker exec -i "$web_server_container" $web_server -t 2>&1 | grep -n file | head -n 1 | awk '{ print $5 }')
-            printf "도커 웹서버 conf 파일 위치: $nginx_conf\n"
+            printf "${INFO}도커 웹서버 conf 파일 위치: ${SUCCESS}$nginx_conf${Color_Off}\n"
             nginx_path=$(docker exec -i "$web_server_container" $web_server -T 2>&1 | grep -nE 'ssl_certificate|ssl_certificate_key' | awk '{print $3}' | sort -u | cut -d';' -f1)
-            printf "도커 conf 내용: \n$nginx_path\n"
+            printf "${INFO}도커 conf 내용: \n${SUCCESS}$nginx_path${Color_Off}\n"
 
             exit 1
             ;;
             
         # 지원하지 않는 웹 서버인 경우
         *)
-            printf "지원하지 않는 웹서버입니다.\n"
+            printf "${DANGER}지원하지 않는 웹서버입니다.${Color_Off}\n"
             exit 1
             ;;
     esac
@@ -263,9 +279,9 @@ else
     os_name=$(uname -s)
     os_version=$(uname -r)
 
-    printf "머신 정보: $machin_arch\n"
-    printf "OS 정보: $os_name $os_version\n"
-    printf "웹서버 정보: $web_server\n"
+    printf "${INFO}머신 정보: ${Color_Off}$machin_arch\n"
+    printf "${INFO}OS 정보: ${Color_Off}$os_name $os_version\n"
+    printf "${INFO}웹서버 정보: ${Color_Off}$web_server\n"
 
     # 웹 서버 확인을 위한 case 문
     case "$web_server" in
@@ -273,7 +289,7 @@ else
         *httpd*)
             # 웹 서버 버전 확인
             web_server_version=$($web_server -v | grep version | awk '{ print $3 }')
-            printf "웹서버 버전: $web_server_version\n"
+            printf "${INFO}웹서버 버전: ${Color_Off}$web_server_version\n"
             
             # httpd -S 명령어의 출력을 임시 파일에 저장
             output=$($web_server -S 2>/dev/null)
@@ -301,7 +317,7 @@ else
 
             # 결과가 있는지 확인하고 처리
             if [[ -n "$found" ]]; then
-                printf "conf 파일 위치:\n$found\n"
+                printf "${INFO}conf 파일 위치:\n${SUCCESS}$found\n${Color_Off}"
                 # echo $found
 
                 # 각 라인에서 파일 경로와 라인 번호 추출
@@ -310,7 +326,7 @@ else
                     file_path=$(echo "$line" | cut -d':' -f1)
                     line_number=$(echo "$line" | cut -d':' -f2)
 
-                    printf "conf 내용:\n$file_path $line_number line.\n"
+                    printf "${INFO}conf 내용:\n${SUCCESS}$file_path $line_number line.${Color_Off}\n"
 
                     # 해당 파일의 라인부터 <VirtualHost> 블록 출력
                     sed -n "${line_number},/<\/VirtualHost>/p" "$file_path"
@@ -318,14 +334,14 @@ else
                 done <<< "$found"
 
             else
-                printf "HTTPD 해당 도메인의 conf 파일을 찾을 수 없습니다.\n"
+                printf "${DANGER}HTTPD 해당 도메인의 conf 파일을 찾을 수 없습니다.${Color_Off}\n"
             fi
             ;;
         *apache*)
             # 웹 서버 버전 확인
             web_server='apachectl'
             web_server_version=$($web_server -v | grep version | awk '{ print $3 }')
-            printf "웹서버 버전: $web_server_version\n"
+            printf "${INFO}웹서버 버전: ${Color_Off}$web_server_version\n"
             
             # httpd -S 명령어의 출력을 임시 파일에 저장
             output=$($web_server -S 2>/dev/null)
@@ -353,7 +369,7 @@ else
 
             # 결과가 있는지 확인하고 처리
             if [[ -n "$found" ]]; then
-                printf "conf 파일 위치:\n$found\n"
+                printf "${INFO}conf 파일 위치:\n${SUCCESS}$found\n${Color_Off}"
                 # echo $found
 
                 # 각 라인에서 파일 경로와 라인 번호 추출
@@ -362,7 +378,7 @@ else
                     file_path=$(echo "$line" | cut -d':' -f1)
                     line_number=$(echo "$line" | cut -d':' -f2)
 
-                    printf "conf 내용:\n$file_path $line_number line.\n"
+                    printf "${INFO}conf 내용:\n${SUCCESS}$file_path $line_number line.${Color_Off}\n"
 
                     # 해당 파일의 라인부터 <VirtualHost> 블록 출력
                     sed -n "${line_number},/<\/VirtualHost>/p" "$file_path"
@@ -370,28 +386,28 @@ else
                 done <<< "$found"
 
             else
-                printf "APACHE 해당 도메인의 conf 파일을 찾을 수 없습니다.\n"
+                printf "${DANGER}APACHE 해당 도메인의 conf 파일을 찾을 수 없습니다.${Color_Off}\n"
             fi
             ;;
             
         # nginx인 경우
         *nginx*)
             # sshpass -p 'utf-8211of987ram' ssh -o HostKeyAlgorithms=+ssh-rsa root@58.229.176.44 -p38371 'bash -s' < search_domain.sh 베이비.com
-            printf "Nginx 서버에 대한 도메인 확인 기능을 구현 중입니다.\n"
+            printf "${WARN}Nginx 서버에 대한 도메인 확인 기능을 구현 중입니다.${Color_Off}\n"
             web_server_version=$($web_server -v 2>&1 | grep version | awk '{ print $3 }')
-            printf "웹서버 버전: $web_server_version\n"
+            printf "${INFO}웹서버 버전: ${Color_Off}$web_server_version\n"
             nginx_conf=$($web_server -T 2>&1 | grep "$search_domain_punycode" -B 3 | grep 'configuration file' | awk '{print $4}' | cut -d':' -f1)
-            printf "$search_domain_punycode conf 파일 위치: $nginx_conf\n"
+            printf "${INFO}$search_domain_punycode conf 파일 위치: ${SUCCESS}$nginx_conf${Color_Off}\n"
             nginx_path=$(cat $nginx_conf | grep -nE '^\s*ssl_certificate|^\*ssl_certificate_key' | awk '{print $3}' | cut -d';' -f1)
             # nginx_path=$($web_server -T 2>&1 | grep -nE "ssl_certificate|ssl_certificate_key" | awk '{print $3}' | sort -u | cut -d';' -f1)
-            printf "conf 내용: \n$nginx_path\n"
+            printf "${INFO}conf 내용: \n${SUCCESS}$nginx_path${Color_Off}\n"
 
             exit 1
             ;;
             
         # 지원하지 않는 웹 서버인 경우
         *)
-            printf "지원하지 않는 웹서버입니다.\n"
+            printf "${DANGER}지원하지 않는 웹서버입니다.${Color_Off}\n"
             exit 1
             ;;
     esac
