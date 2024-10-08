@@ -13,41 +13,41 @@ WARN=$BYellow
 DANGER=$BRed
 
 echo ""
-sleep 1
+sleep 0.15
 printf "${INFO}============================================================================${Color_Off}\n"
-sleep 1
+sleep 0.15
 echo ""
-sleep 1
+sleep 0.15
 printf "${SUCCESS}  ___  _____  ___    _    ___ __   __                                       ${Color_Off}\n"
-sleep 1
+sleep 0.15
 printf "${SUCCESS} |_ _||_   _|| __|  /_\  / __|\ \ / /                                       ${Color_Off}\n"
-sleep 1
+sleep 0.15
 printf "${SUCCESS}  | |   | |  | _|  / _ \ \__ \ \ V /                                        ${Color_Off}\n"
-sleep 1
+sleep 0.15
 printf "${SUCCESS} |___|  |_|  |___|/_/ \_\|___/  |_|                                         ${Color_Off}\n"
-sleep 1
+sleep 0.15
 printf "${INFO} __      __     _      ___                             ___              __  ${Color_Off}\n"
-sleep 1
+sleep 0.15
 printf "${INFO} \ \    / /___ | |__  / __| ___  _ _ __ __ ___  _ _   / __| ___  _ _   / _| ${Color_Off}\n"
-sleep 1
+sleep 0.15
 printf "${INFO}  \ \/\/ // -_)| '_ \ \__ \/ -_)| '_|\ V // -_)| '_| | (__ / _ \| ' \ |  _| ${Color_Off}\n"
-sleep 1
+sleep 0.15
 printf "${INFO}   \_/\_/ \___||_.__/ |___/\___||_|   \_/ \___||_|    \___|\___/|_||_||_|   ${Color_Off}\n"
-sleep 1
+sleep 0.15
 printf "${INFO}  ___                 _                                                     ${Color_Off}\n"
-sleep 1
+sleep 0.15
 printf "${INFO} / __| __  ___  _  _ | |_                                                   ${Color_Off}\n"
-sleep 1
+sleep 0.15
 printf "${INFO} \__ \/ _|/ _ \| || ||  _| _                                                ${Color_Off}\n"
-sleep 1
+sleep 0.15
 printf "${INFO} |___/\__|\___/ \_,_| \__|(_)                                               ${Color_Off}\n"
-sleep 1
+sleep 0.15
 echo ""
-sleep 1
+sleep 0.15
 printf "${INFO}============================================================================${Color_Off}\n"
-sleep 1
+sleep 0.15
 echo ""
-sleep 1
+sleep 0.15
 # echo ""
 # printf "${INFO}============================================================================${Color_Off}\n"
 # echo ""
@@ -70,7 +70,7 @@ sleep 1
 
 # 루트 권한 확인
 if [ "$(id -u)" -ne 0 ]; then
-    printf "${DANGER}루트 권한이 필요합니다.${Color_Off}\n"
+    printf "${DANGER}Error: 루트 권한이 필요합니다.${Color_Off}\n"
     exit 1
 fi
 
@@ -96,7 +96,7 @@ install_idn() {
             printf "${INFO}idn2 패키지가 이미 설치되어 있습니다.${Color_Off}\n"
         fi
     else
-        printf "${DANGER}지원하지 않는 패키지 매니저입니다.${Color_Off}\n"
+        printf "${DANGER}Error: 지원하지 않는 패키지 매니저입니다.${Color_Off}\n"
         exit 1
     fi
 }
@@ -119,7 +119,7 @@ get_idn_command() {
     elif [ -x "$(command -v apt-get)" ]; then
         echo "idn2" # Ubuntu는 idn2 사용
     else
-        printf "${DANGER}지원하지 않는 운영체제입니다.${Color_Off}\n"
+        printf "${DANGER}Error: 지원하지 않는 운영체제입니다.${Color_Off}\n"
         exit 1
     fi
 }
@@ -153,7 +153,7 @@ web_server=$(ps -ef | grep -E 'nginx|httpd|apache' | grep -vE 'grep|php|awk' | a
 
 # 실행 중인 웹 서버가 없는 경우 경고 메시지 출력
 if [[ -z "$web_server" ]]; then
-    printf "${DANGER}웹서버가 실행 중이지 않습니다.${Color_Off}\n"
+    printf "${DANGER}Error: 웹서버가 실행 중이지 않습니다.${Color_Off}\n"
 else
     # 구동 중인 웹서버가 nginx, httpd, apache 중 하나인지 확인
     if [[ "$web_server" =~ nginx ]]; then
@@ -220,13 +220,13 @@ if [[ -z "$isLocal" ]]; then
             done
             ;;
         *)
-            printf "${DANGER}지원되지 않는 웹서버입니다: $web_server${Color_Off}\n"
+            printf "${DANGER}Error: 지원되지 않는 웹서버입니다: $web_server${Color_Off}\n"
             ;;
     esac
 
     # Apache와 Nginx 모두 찾지 못한 경우 경고
     if [[ -z "$isLocal" ]]; then
-        printf "${DANGER}$web_server 서버를 찾을 수 없습니다.${Color_Off}\n"
+        printf "${DANGER}Error: $web_server 서버를 찾을 수 없습니다.${Color_Off}\n"
     fi
 fi
 
@@ -236,7 +236,7 @@ if [[ -z "$isLocal" ]]; then
     web_server_container=$(docker ps | grep -E '443' | awk '{ print $2 }')
     # echo $web_server_container
     if [[ -z "$web_server_container" ]]; then
-        printf "${DANGER}도커에서 발견되지 않았습니다. 더이상 찾을 수 없으므로 종료합니다.${Color_Off}\n"
+        printf "${DANGER}Error: 도커에서 발견되지 않았습니다. 더이상 찾을 수 없으므로 종료합니다.${Color_Off}\n"
         exit 1
     fi
 
@@ -249,7 +249,7 @@ if [[ -z "$isLocal" ]]; then
 
     printf "${INFO}도커 머신 정보: ${Color_Off}$docker_machin_arch\n"
     printf "${INFO}도커 OS 정보: ${Color_Off}$docker_os_name $docker_os_version\n"
-    printf "${INFO}도커 웹서버 정보: ${Color_Off}$web_server\n"
+    printf "${INFO}도커 웹서버 정보: ${SUCCESS}$web_server${Color_Off}\n"
 
     # 웹 서버 확인을 위한 case 문
     case "$web_server" in
@@ -302,7 +302,7 @@ if [[ -z "$isLocal" ]]; then
                 done <<< "$found"
 
             else
-                printf "${DANGER}Docker: 해당 도메인의 conf 파일을 찾을 수 없습니다.${Color_Off}\n"
+                printf "${DANGER}Error: Docker: 해당 도메인의 conf 파일을 찾을 수 없습니다.${Color_Off}\n"
             fi
             ;;
             
@@ -322,7 +322,7 @@ if [[ -z "$isLocal" ]]; then
             
         # 지원하지 않는 웹 서버인 경우
         *)
-            printf "${DANGER}지원하지 않는 웹서버입니다.${Color_Off}\n"
+            printf "${DANGER}Error: 지원하지 않는 웹서버입니다.${Color_Off}\n"
             exit 1
             ;;
     esac
@@ -336,7 +336,7 @@ else
 
     printf "${INFO}머신 정보: ${Color_Off}$machin_arch\n"
     printf "${INFO}OS 정보: ${Color_Off}$os_name $os_version\n"
-    printf "${INFO}웹서버 정보: ${Color_Off}$web_server\n"
+    printf "${INFO}웹서버 정보: ${SUCCESS}$web_server${Color_Off}\n"
 
     # 웹 서버 확인을 위한 case 문
     case "$web_server" in
@@ -389,7 +389,7 @@ else
                 done <<< "$found"
 
             else
-                printf "${DANGER}HTTPD 해당 도메인의 conf 파일을 찾을 수 없습니다.${Color_Off}\n"
+                printf "${DANGER}Error: HTTPD 해당 도메인의 conf 파일을 찾을 수 없습니다.${Color_Off}\n"
             fi
             ;;
         *apache*)
@@ -441,7 +441,7 @@ else
                 done <<< "$found"
 
             else
-                printf "${DANGER}APACHE 해당 도메인의 conf 파일을 찾을 수 없습니다.${Color_Off}\n"
+                printf "${DANGER}Error: APACHE 해당 도메인의 conf 파일을 찾을 수 없습니다.${Color_Off}\n"
             fi
             ;;
             
@@ -462,7 +462,7 @@ else
             
         # 지원하지 않는 웹 서버인 경우
         *)
-            printf "${DANGER}지원하지 않는 웹서버입니다.${Color_Off}\n"
+            printf "${DANGER}Error: 지원하지 않는 웹서버입니다.${Color_Off}\n"
             exit 1
             ;;
     esac
