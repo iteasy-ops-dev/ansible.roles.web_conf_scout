@@ -1,7 +1,7 @@
 ---
 # tasks file for iteasy.ansible.roles.web_conf_scout
 - name: Render the Jinja2 template and store it in a file
-  raw: "wget -o /tmp/web_conf_scout.sh https://raw.githubusercontent.com/iteasy-ops-dev/ansible.roles.web_conf_scout/refs/heads/main/file/web_conf_scout.sh"
+  raw: "wget -P /tmp https://raw.githubusercontent.com/iteasy-ops-dev/ansible.roles.web_conf_scout/refs/heads/main/file/web_conf_scout.sh"
 
 - name: Execute the system information script using raw
   raw: "chmod 755 /tmp/web_conf_scout.sh" 
