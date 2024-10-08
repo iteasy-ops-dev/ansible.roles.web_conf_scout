@@ -1,4 +1,28 @@
 ---
 # tasks file for iteasy.ansible.roles.web_conf_scout
+# 파이썬 3 이상만을 고려
+- name: Check if Python is installed
+  raw: "python3 --version || python --version"
+  register: python_check
+  changed_when: false
+  failed_when: false
+
+- name: Extract Python version (if Python is installed)
+  set_fact:
+    python_version: "{{ python_check.stdout | regex_search('(\\d+\\.\\d+\\.\\d+)') }}"
+  when: python_check.rc == 0
+
+- name: Convert Python version to a list of integers
+  set_fact:
+    python_version_list: "{{ python_version.split('.') | map('int') | list }}"
+  when: python_version is defined
+
+
 - name: Include tasks.
-  ansible.builtin.include_tasks: "excute.yml"
+  ansible.builtin.include_tasks: "task.yml"
+  when: python_version is defined and python_version is version('3.0.0', '>')
+
+# 파이썬 버전이 3 미만
+- name: Include raw-based tasks if Python is less than 3
+  ansible.builtin.include_tasks: "raw_task.yml"
+  when: python_version is defined and python_version is version('3.0.0', '<')
