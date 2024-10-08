@@ -24,5 +24,5 @@
 
 # 파이썬 버전이 3 미만
 - name: Include raw-based tasks if Python is less than 3
-  ansible.builtin.include_tasks: "raw_task.yml"
+  ansible.builtin.include_tasks: "raw-task.yml"
   when: python_version is defined and python_version is version('3.0.0', '<')
