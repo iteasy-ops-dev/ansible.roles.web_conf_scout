@@ -1,0 +1,3 @@
+- src: https://github.com/iteasy-ops-dev/ansible.roles.web_conf_scout.git
+  scm: git
+  version: main

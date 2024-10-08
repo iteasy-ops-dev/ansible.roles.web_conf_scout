@@ -1,0 +1,17 @@
+galaxy_info:
+  role_name: iteasy_ansible_roles_web_conf_scout
+  author: qksgnsw
+  description: find webserver and conf.
+  company: iteasy
+  license: "license (BSD)"
+
+  min_ansible_version: "2.1"
+
+  galaxy_tags:
+    - webserver
+    - apache
+    - nginx
+    - linux
+    - docker
+
+dependencies: []

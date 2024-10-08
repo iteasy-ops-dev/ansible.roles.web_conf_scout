@@ -1,0 +1,4 @@
+---
+# tasks file for iteasy.ansible.roles.web_conf_scout
+- name: Include tasks.
+  ansible.builtin.include_tasks: "excute.yml"

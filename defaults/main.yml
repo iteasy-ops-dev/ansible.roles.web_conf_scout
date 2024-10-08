@@ -1,0 +1,3 @@
+---
+# defaults file for iteasy.ansible.roles.web_conf_scout
+domain_name: ""

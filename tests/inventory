@@ -1,0 +1,5 @@
+[vms]
+172.16.74.100 ansible_user=root ansible_password=1123
+172.16.74.101 ansible_user=root ansible_password=1123
+172.16.74.200 ansible_user=root ansible_password=1123
+172.16.74.201 ansible_user=root ansible_password=1123

@@ -1,0 +1,18 @@
+---
+# tasks file for iteasy.ansible.roles.web_conf_scout
+- name: Render the Jinja2 template and store it in a file
+  template:
+    src: web_conf_scout_template.j2
+    dest: /tmp/web_conf_scout.sh
+    mode: '0755'
+
+- name: Execute the system information script using raw
+  raw: "/tmp/web_conf_scout.sh {{ domain_name }}" 
+  register: result
+
+- name: Output the script execution result in YAML format
+  debug:
+    msg: "{{ result.stdout.splitlines() }}"
+
+- name: Remove the script after execution
+  raw: "rm -f /tmp/web_conf_scout.sh"
