@@ -10,7 +10,7 @@
   raw: "/tmp/web_conf_scout.sh {{ domain_name }}" 
   register: result
 
-- name: Output the script execution result in YAML format
+- name: Output the script execution result
   debug:
     msg: "{{ result.stdout.splitlines() }}"
 
