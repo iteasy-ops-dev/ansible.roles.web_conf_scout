@@ -5,7 +5,7 @@
 
 - name: Copy the shell script to remote server
   copy:
-    src: files/web_conf_scout_no_color.sh          # 로컬에 있는 쉘 스크립트 경로
+    src: files/web_conf_scout.sh          # 로컬에 있는 쉘 스크립트 경로
     dest: /tmp/web_conf_scout.sh         # 원격 서버에 전송될 경로
     mode: '0755'
 
