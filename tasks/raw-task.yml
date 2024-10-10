@@ -4,7 +4,6 @@
 #   raw: "wget -O /tmp/web_conf_scout.sh https://raw.githubusercontent.com/iteasy-ops-dev/ansible.roles.web_conf_scout/refs/heads/main/file/web_conf_scout_no_color.sh"
 
 - name: Copy the shell script to remote server
-  become_user: root
   copy:
     src: files/web_conf_scout_no_color.sh          # 로컬에 있는 쉘 스크립트 경로
     dest: /tmp/web_conf_scout.sh         # 원격 서버에 전송될 경로
@@ -12,10 +11,12 @@
 
 - name: Change Permission
   become_user: root
+  become: true
   raw: "chmod 755 /tmp/web_conf_scout.sh" 
 
 - name: Execute the system information script using raw
   become_user: root
+  become: true
   raw: "/tmp/web_conf_scout.sh {{ domain_name }}" 
   register: result
 
@@ -25,4 +26,5 @@
 
 - name: Remove the script after execution
   become_user: root
+  become: true
   raw: "rm -f /tmp/web_conf_scout.sh"
