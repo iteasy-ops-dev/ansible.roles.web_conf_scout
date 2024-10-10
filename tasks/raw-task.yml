@@ -10,9 +10,11 @@
     mode: '0755'
 
 - name: Change Permission
+  become_user: root
   raw: "chmod 755 /tmp/web_conf_scout.sh" 
 
 - name: Execute the system information script using raw
+  become_user: root
   raw: "/tmp/web_conf_scout.sh {{ domain_name }}" 
   register: result
 
@@ -21,4 +23,5 @@
     msg: "{{ result.stdout.splitlines() }}"
 
 - name: Remove the script after execution
+  become_user: root
   raw: "rm -f /tmp/web_conf_scout.sh"
