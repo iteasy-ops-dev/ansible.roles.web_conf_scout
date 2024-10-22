@@ -1,8 +1,15 @@
 #!/bin/bash
 
+Color_Off='\033[0m'
+INFO=$BBlue
+SUCCESS=$BGreen
+WARN=$BYellow
+DANGER=$BRed
+
+
 # 루트 권한 확인
 if [ "$(id -u)" -ne 0 ]; then
-    printf "루트 권한이 필요합니다.\n"
+    printf "Error: 루트 권한이 필요합니다.\n"
     exit 1
 fi
 
@@ -28,7 +35,7 @@ install_idn() {
             printf "idn2 패키지가 이미 설치되어 있습니다.\n"
         fi
     else
-        printf "지원하지 않는 패키지 매니저입니다.\n"
+        printf "Error: 지원하지 않는 패키지 매니저입니다.\n"
         exit 1
     fi
 }
@@ -51,7 +58,7 @@ get_idn_command() {
     elif [ -x "$(command -v apt-get)" ]; then
         echo "idn2" # Ubuntu는 idn2 사용
     else
-        printf "지원하지 않는 운영체제입니다.\n"
+        printf "Error: 지원하지 않는 운영체제입니다.\n"
         exit 1
     fi
 }
@@ -81,35 +88,38 @@ search_domain_punycode=$(convert_to_punycode "$search_domain")
 printf "검색 할 도메인: $search_domain_punycode\n"
 
 # 웹서버 확인
-web_server=$( ps -e | grep -E 'nginx|apache|httpd' | head -n 1 | awk '{print $4}')
+web_server=$(ps -ef | grep -E 'nginx|httpd|apache' | grep -vE 'grep|php|awk' | awk '{print $8}' | head -n 1 | tr -d ':')
 
-# if [[ -z "$web_server" ]]; then
-#     printf "웹서버를 찾을 수 없습니다.\n"
-#     exit 1
-# fi
-
-# # 웹서버가 로컬에 설치되어있는지 확인
-# isLocal=$(which $web_server)
-
-# 실행 중인 웹 서버가 없는 경우 경고 메시지만 출력하고 진행
+# 실행 중인 웹 서버가 없는 경우 경고 메시지 출력
 if [[ -z "$web_server" ]]; then
-    printf "웹서버가 실행 중이지 않습니다.\n"
+    printf "Error: 웹서버가 실행 중이지 않습니다.\n"
 else
-    printf "실행 중인 웹서버: $web_server\n"
+    # 구동 중인 웹서버가 nginx, httpd, apache 중 하나인지 확인
+    if [[ "$web_server" =~ nginx ]]; then
+        printf "실행중인 서버:  $web_server\n"
+    elif [[ "$web_server" =~ httpd ]]; then
+        printf "실행중인 서버:  $web_server\n"
+    elif [[ "$web_server" =~ apache ]]; then
+        printf "실행중인 서버:  $web_server\n"
+    else
+        printf "알 수 없는 웹서버가 실행 중입니다:  $web_server\n"
+    fi
 fi
+
+
 
 # 로컬 설치 여부 확인 (Apache 또는 Nginx)
 isLocal=$(which $web_server 2>/dev/null)
 
 # Apache 및 Nginx 서버 설정 파일이 있을 수 있는 경로 리스트
-HTTPD_TARGETS="/etc/httpd /usr/pkg/etc/httpd /etc/init.d/httpd"
+HTTPD_TARGETS="/etc/httpd /usr/pkg/etc/httpd /etc/init.d/httpd /usr/local/apache/bin/httpd"
 
 APACHE_TARGETS="/etc/apache /etc/apache2 /opt/apache \
     /usr/local/apache /usr/local/apache2 \
     /usr/local/etc/apache /usr/local/etc/apache2 /usr/local/etc/apache22 \
     /etc/sysconfig/apache2 /usr/local/etc/apache24"
 
-NGINX_TARGETS="/etc/nginx /usr/local/etc/nginx"
+NGINX_TARGETS="/etc/nginx /usr/local/etc/nginx /usr/sbin/nginx"
 
 # 로컬에서 찾을 수 없을 경우, Apache/Nginx 경로 탐색
 if [[ -z "$isLocal" ]]; then
@@ -149,13 +159,13 @@ if [[ -z "$isLocal" ]]; then
             done
             ;;
         *)
-            printf "지원되지 않는 웹서버입니다: $web_server\n"
+            printf "Error: 지원되지 않는 웹서버입니다: $web_server\n"
             ;;
     esac
 
     # Apache와 Nginx 모두 찾지 못한 경우 경고
     if [[ -z "$isLocal" ]]; then
-        printf "$web_server 서버를 찾을 수 없습니다.\n"
+        printf "Error: $web_server 서버를 찾을 수 없습니다.\n"
     fi
 fi
 
@@ -165,7 +175,7 @@ if [[ -z "$isLocal" ]]; then
     web_server_container=$(docker ps | grep -E '443' | awk '{ print $2 }')
     # echo $web_server_container
     if [[ -z "$web_server_container" ]]; then
-        printf "도커에서 발견되지 않았습니다. 더이상 찾을 수 없으므로 종료합니다.\n"
+        printf "Error: 도커에서 발견되지 않았습니다. 더이상 찾을 수 없으므로 종료합니다.\n"
         exit 1
     fi
 
@@ -231,7 +241,7 @@ if [[ -z "$isLocal" ]]; then
                 done <<< "$found"
 
             else
-                printf "Docker: 해당 도메인의 conf 파일을 찾을 수 없습니다.\n"
+                printf "Error: Docker: 해당 도메인의 conf 파일을 찾을 수 없습니다.\n"
             fi
             ;;
             
@@ -251,7 +261,7 @@ if [[ -z "$isLocal" ]]; then
             
         # 지원하지 않는 웹 서버인 경우
         *)
-            printf "지원하지 않는 웹서버입니다.\n"
+            printf "Error: 지원하지 않는 웹서버입니다.\n"
             exit 1
             ;;
     esac
@@ -318,7 +328,7 @@ else
                 done <<< "$found"
 
             else
-                printf "HTTPD 해당 도메인의 conf 파일을 찾을 수 없습니다.\n"
+                printf "Error: HTTPD 해당 도메인의 conf 파일을 찾을 수 없습니다.\n"
             fi
             ;;
         *apache*)
@@ -370,7 +380,7 @@ else
                 done <<< "$found"
 
             else
-                printf "APACHE 해당 도메인의 conf 파일을 찾을 수 없습니다.\n"
+                printf "Error: APACHE 해당 도메인의 conf 파일을 찾을 수 없습니다.\n"
             fi
             ;;
             
@@ -391,7 +401,7 @@ else
             
         # 지원하지 않는 웹 서버인 경우
         *)
-            printf "지원하지 않는 웹서버입니다.\n"
+            printf "Error: 지원하지 않는 웹서버입니다.\n"
             exit 1
             ;;
     esac
