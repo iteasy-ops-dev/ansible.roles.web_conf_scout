@@ -1,27 +1,56 @@
 ---
 # tasks file for iteasy.ansible.roles.web_conf_scout
 # 파이썬 3 이상만을 고려
+# - name: Check if Python is installed
+#   raw: "python3 --version || python --version"
+#   register: python_check
+#   changed_when: false
+#   failed_when: false
+
+# - name: Extract Python version (if Python is installed)
+#   set_fact:
+#     python_version: "{{ python_check.stdout | regex_search('(\\d+\\.\\d+\\.\\d+)') }}"
+#   when: python_check.rc == 0
+
+# - name: Convert Python version to a list of integers
+#   set_fact:
+#     python_version_list: "{{ python_version.split('.') | map('int') | list }}"
+#   when: python_version is defined
+
+# - name: Include tasks.
+#   ansible.builtin.include_tasks: "task.yml"
+#   when: python_version is defined and python_version is version('3.0.0', '>')
+
+# # 파이썬 버전이 3 미만
+# - name: Include raw-based tasks if Python is less than 3
+#   ansible.builtin.include_tasks: "raw-task.yml"
+#   when: python_version is defined and python_version is version('3.0.0', '<')
+
+# Python이 설치되어 있는지 확인
 - name: Check if Python is installed
   raw: "python3 --version || python --version"
   register: python_check
   changed_when: false
   failed_when: false
 
+# Python 버전 추출 (설치된 경우)
 - name: Extract Python version (if Python is installed)
   set_fact:
     python_version: "{{ python_check.stdout | regex_search('(\\d+\\.\\d+\\.\\d+)') }}"
   when: python_check.rc == 0
 
+# Python 버전을 정수 리스트로 변환
 - name: Convert Python version to a list of integers
   set_fact:
     python_version_list: "{{ python_version.split('.') | map('int') | list }}"
   when: python_version is defined
 
-- name: Include tasks.
+# Python 버전이 3 이상인 경우 task.yml 포함
+- name: Include tasks if Python version is 3 or higher
   ansible.builtin.include_tasks: "task.yml"
-  when: python_version is defined and python_version is version('3.0.0', '>')
+  when: python_version_list is defined and python_version_list[0] >= 3
 
-# 파이썬 버전이 3 미만
-- name: Include raw-based tasks if Python is less than 3
+# Python 버전이 3 미만인 경우 raw-task.yml 포함
+- name: Include raw-based tasks if Python version is less than 3
   ansible.builtin.include_tasks: "raw-task.yml"
-  when: python_version is defined and python_version is version('3.0.0', '<')
+  when: python_version_list is defined and python_version_list[0] < 3
