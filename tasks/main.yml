@@ -45,6 +45,11 @@
     python_version_list: "{{ python_version.split('.') | map('int') | list }}"
   when: python_version is defined
 
+- name: Output python_version_list
+  debug:
+    msg: "{{ python_version_list }}"
+
+
 # Python 버전이 3 이상인 경우 task.yml 포함
 - name: Include tasks if Python version is 3 or higher
   ansible.builtin.include_tasks: "task.yml"
