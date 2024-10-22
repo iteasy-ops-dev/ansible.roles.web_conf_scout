@@ -28,9 +28,6 @@
 
 # Python이 설치되어 있는지 확인
 - name: Check if Python is installed
-  become_user: root
-  become_method: su
-  become: true
   raw: "python3 --version || python --version"
   register: python_check
   changed_when: false
