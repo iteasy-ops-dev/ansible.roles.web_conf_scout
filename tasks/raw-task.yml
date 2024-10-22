@@ -9,8 +9,9 @@
 #     dest: /tmp/web_conf_scout.sh         # 원격 서버에 전송될 경로
 #     mode: '0755'
 
+# 절대 경로 테스트
 - name: Copy file to remote using scp through raw
-  raw: "scp -P {{ ansible_port }} -o StrictHostKeyChecking=no ../file/web_conf_scout_no_color.sh {{ ansible_user }}@{{ ansible_host }}:/tmp/web_conf_scout.sh"
+  raw: "scp -P {{ ansible_port }} -o StrictHostKeyChecking=no /root/ansible/roles/ansible.roles.web_conf_scout/file/web_conf_scout_no_color.sh {{ ansible_user }}@{{ ansible_host }}:/tmp/web_conf_scout.sh"
   delegate_to: localhost
 
 - name: Change Permission
